@@ -3,7 +3,7 @@ print("hello heroku")
 dbURI = os.environ.get("DATABASE_URL")
 print(dbURI)
 try:
-    os.system("pg_dump " + dbURI + " > mydb.sql")
+    os.system("pg_dump " + dbURI + " -T 'Test2' > mydb2.sql")
     print("Backup completed")
 except Exception as e:
     print("!!Problem occured!!")
