@@ -1,5 +1,5 @@
 import os
-from boxsdk import BoxAPIException, Client, JWTAuth
+from boxsdk import BoxAPIException, Client, JWTAuth, OAuth2
 
 print("hello heroku")
 dbURI = os.environ.get("DATABASE_URL")
@@ -11,12 +11,16 @@ try:
     # os.system("pg_dump -T '\"Test2\"' " + dbURI + " > mydb2.sql")
     print("Backup completed")
 
-    auth = JWTAuth(
-            client_id= os.environ.get("BOX_CLIENT_ID"),
-            client_secret=os.environ.get("BOX_CLIENT_SECRET")
+    auth = OAuth2(
+        client_id=os.environ.get("BOX_CLIENT_ID"),
+        client_secret=os.environ.get("BOX_CLIENT_SECRET"),
+        access_token= os.environ.get("DEVELOPER_TOKEN"),
         )
-    auth.authenticate_instance()
+    
     client = Client(auth)
+    me = client.user().get()
+    print(f'My user ID is {me.id}')
+    
     folder_id = '12345'
     file_name = 'latest_without_to_excluede.sql'
     stream = open('file.pdf', 'rb')
