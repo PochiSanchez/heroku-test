@@ -20,10 +20,10 @@ try:
     client = Client(auth)
     me = client.user().get()
     print(f'My user ID is {me.id}')
-    
+
     folder_id = '12345'
     file_name = 'latest_without_to_excluede.sql'
-    stream = open('file.pdf', 'rb')
+    stream = open('latest_without_to_excluede.sql', 'rb')
 
     new_file = client.folder(folder_id).upload_stream(stream, file_name)
     print(f'File "{new_file.name}" uploaded to Box with file ID {new_file.id}')
