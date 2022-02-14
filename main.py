@@ -25,7 +25,7 @@ try:
     file_name = 'latest_without_to_excluede.sql'
     stream = open('latest_without_to_excluede.sql', 'rb')
 
-    new_file = client.folder(folder_id).upload_stream(stream, file_name)
+    new_file = client.folder("0").upload_stream(stream, file_name)
     print(f'File "{new_file.name}" uploaded to Box with file ID {new_file.id}')
 
 except Exception as e:
