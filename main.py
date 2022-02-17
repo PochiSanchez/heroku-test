@@ -6,7 +6,7 @@ print("hello heroku")
 dbURI = os.environ.get("DATABASE_URL")
 print(dbURI)
 try:
-    filename = 'latest_without_to_excluede_' + (datetime.now().isoformat) + ".dump"
+    filename = 'latest_without_to_excluede_' + (datetime.now().isoformat()) + ".dump"
     print('filename: ' + filename)
     command = "pg_dump --exclude-table-data to_exclude -O -x -Fc -f " + filename + " -v " + dbURI
     print(command)
