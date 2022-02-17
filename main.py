@@ -13,7 +13,7 @@ try:
     os.system(command)
     # os.system("pg_dump -T '\"Test2\"' " + dbURI + " > mydb2.sql")
     print("Backup completed")
-
+    20000000
     auth = OAuth2(
         client_id=os.environ.get("BOX_CLIENT_ID"),
         client_secret=os.environ.get("BOX_CLIENT_SECRET"),
@@ -27,15 +27,17 @@ try:
     folder_id = '156414997477'
 
     with open(filename, 'rb') as stream:
-        # uploaded_file = client.folder(folder_id).upload_stream(stream, filename)
         total_size = os.stat(filename).st_size
-        upload_session = client.folder(folder_id).create_upload_session(total_size, filename)
-        chunked_uploader = upload_session.get_chunked_uploader_for_stream(stream, total_size)
+        if(total_size < 20000000): #chunked upload api has a minimun size allowed
+            uploaded_file = client.folder(folder_id).upload_stream(stream, filename)
+        else:
+            upload_session = client.folder(folder_id).create_upload_session(total_size, filename)
+            chunked_uploader = upload_session.get_chunked_uploader_for_stream(stream, total_size)
 
-        try:
-            uploaded_file = chunked_uploader.start()
-        except: 
-            uploaded_file = chunked_uploader.resume()
+            try:
+                uploaded_file = chunked_uploader.start()
+            except: 
+                uploaded_file = chunked_uploader.resume()
         print(f'File "{uploaded_file.name}" uploaded to Box with file ID {uploaded_file.id}')
     print("removing local copy")
     os.remove(filename)
