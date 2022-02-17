@@ -1,11 +1,14 @@
 import os
-from boxsdk import BoxAPIException, Client, JWTAuth, OAuth2
+from boxsdk import Client, JWTAuth, OAuth2
+from datetime import datetime
 
 print("hello heroku")
 dbURI = os.environ.get("DATABASE_URL")
 print(dbURI)
 try:
-    command = "pg_dump --exclude-table-data to_exclude -O -x -f latest_without_to_excluede.sql -v " + dbURI
+    filename = 'latest_without_to_excluede_' + (datetime.now().isoformat) + ".dump"
+    print('filename: ' + filename)
+    command = "pg_dump --exclude-table-data to_exclude -O -x -Fc -f " + filename + " -v " + dbURI
     print(command)
     os.system(command)
     # os.system("pg_dump -T '\"Test2\"' " + dbURI + " > mydb2.sql")
@@ -21,12 +24,21 @@ try:
     me = client.user().get()
     print(f'My user ID is {me.id}')
 
-    folder_id = '12345'
-    file_name = 'latest_without_to_excluede.sql'
-    stream = open('latest_without_to_excluede.sql', 'rb')
+    folder_id = '156414997477'
 
-    new_file = client.folder("0").upload_stream(stream, file_name)
-    print(f'File "{new_file.name}" uploaded to Box with file ID {new_file.id}')
+    with open(filename, 'rb') as stream:
+        # uploaded_file = client.folder(folder_id).upload_stream(stream, filename)
+        total_size = os.stat(filename).st_size
+        upload_session = client.folder(folder_id).create_upload_session(total_size, filename)
+        chunked_uploader = upload_session.get_chunked_uploader_for_stream(stream, total_size)
+
+        try:
+            uploaded_file = chunked_uploader.start()
+        except: 
+            uploaded_file = chunked_uploader.resume()
+        print(f'File "{uploaded_file.name}" uploaded to Box with file ID {uploaded_file.id}')
+    print("removing local copy")
+    os.remove(filename)
 
 except Exception as e:
     print("!!Problem occured!!")
